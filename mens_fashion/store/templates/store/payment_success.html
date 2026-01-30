@@ -1,0 +1,12 @@
+{% extends 'store/main.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="box-element text-center">
+            <h3>Payment सफल ✅</h3>
+            <p>Your payment was successful. Your order is confirmed.</p>
+            <a href="{% url 'store' %}" class="btn btn-success btn-pill">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

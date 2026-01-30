@@ -1,0 +1,77 @@
+{% extends 'store/main.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="box-element">
+            <h3>My Order History</h3>
+            <p>Welcome, <strong>{{user.username}}</strong>! Here are all your completed orders.</p>
+            <hr>
+            {% if orders_with_items %}
+                {% for order_data in orders_with_items %}
+                <div class="box-element mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5>Order #{{order_data.order.id}}</h5>
+                            <p class="text-muted mb-0">Placed on {{order_data.order.date_ordered|date:"F d, Y"}}</p>
+                        </div>
+                        <div class="text-right">
+                               <h4 class="mb-0">₹{{order_data.order.get_cart_total|floatformat:2}}</h4>
+                            <small class="text-muted">{{order_data.order.get_cart_items}} items</small>
+                            <div class="mt-2">
+                                {% if order_data.order.status == 'cancelled' %}
+                                    <span class="badge badge-danger">Cancelled</span>
+                                {% else %}
+                                    <span class="badge badge-success">Placed</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h6>Order Items:</h6>
+                    {% for item in order_data.items %}
+                    <div class="cart-row mb-2">
+                        <div style="flex:2">
+                            <img class="row-image" src="{{item.product.imageURL}}" alt="{{item.product.name}}">
+                        </div>
+                        <div style="flex:3">
+                            <p class="mb-0"><strong>{{item.product.name}}</strong></p>
+                            <small class="text-muted">Quantity: {{item.quantity}}</small>
+                        </div>
+                        <div style="flex:1" class="text-right">
+                               <p class="mb-0">₹{{item.product.price|floatformat:2}}</p>
+                               <small class="text-muted">Total: ₹{{item.get_total|floatformat:2}}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if order_data.order.shippingaddress_set.first %}
+                    <hr>
+                    <h6>Shipping Address:</h6>
+                    <p class="mb-0">
+                        {{order_data.order.shippingaddress_set.first.address}}<br>
+                        {{order_data.order.shippingaddress_set.first.city}}, {{order_data.order.shippingaddress_set.first.state}} {{order_data.order.shippingaddress_set.first.zipcode}}
+                    </p>
+                    {% endif %}
+
+                    {% if order_data.order.status != 'cancelled' %}
+                    <hr>
+                    <form method="post" action="{% url 'cancel_order' order_data.order.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Cancel Order</button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info text-center">
+                    <h5>No orders yet!</h5>
+                    <p>Start shopping and your orders will appear here.</p>
+                    <a href="{% url 'store' %}" class="btn btn-primary btn-pill mt-2">Browse Products</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

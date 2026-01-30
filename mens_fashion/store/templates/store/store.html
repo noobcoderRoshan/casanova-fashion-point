@@ -1,0 +1,33 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<div class="section-header">
+    <h2>Featured Products</h2>
+    <p>Modern fits, tailored comfort, and standout pieces for your wardrobe.</p>
+</div>
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-lg-4">
+        <div class="product-card">
+            {% if product.imageURL %}
+                <img class="thumbnail" src="{{product.imageURL}}" alt="{{product.name}}" onerror="this.onerror=null;this.src='{% static 'images/placeholder.svg' %}';">
+            {% else %}
+                <img class="thumbnail" src="{% static 'images/placeholder.svg' %}" alt="{{product.name}}">
+            {% endif %}
+            <div class="product-body">
+                <div class="product-title">
+                    <h6>{{product.name}}</h6>
+                    <span class="price">₹{{product.price}}</span>
+                </div>
+                <p class="product-desc">{{product.description|default:"Premium quality menswear built for everyday confidence."}}</p>
+                <div class="product-actions">
+                    <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+                    <a class="btn btn-outline-success" href="#">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

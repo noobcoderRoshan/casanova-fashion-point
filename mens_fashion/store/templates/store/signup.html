@@ -1,0 +1,84 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<div class="auth-container">
+    <div class="auth-wrapper auth-signup">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Join Casanova Fashion Point today</p>
+            </div>
+            
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                
+                <div class="form-group-custom">
+                    <label for="{{ form.username.id_for_label }}">Username</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        {{ form.username }}
+                    </div>
+                    {% if form.username.errors %}
+                        <div class="error-message">{{ form.username.errors }}</div>
+                    {% endif %}
+                    {% if form.username.help_text %}
+                        <small class="help-text">{{ form.username.help_text|safe }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group-custom">
+                    <label for="{{ form.password1.id_for_label }}">Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔐</span>
+                        {{ form.password1 }}
+                    </div>
+                    {% if form.password1.errors %}
+                        <div class="error-message">{{ form.password1.errors }}</div>
+                    {% endif %}
+                    {% if form.password1.help_text %}
+                        <small class="help-text">{{ form.password1.help_text|safe }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group-custom">
+                    <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">✓</span>
+                        {{ form.password2 }}
+                    </div>
+                    {% if form.password2.errors %}
+                        <div class="error-message">{{ form.password2.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="btn-login">Create Account</button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Already have an account? <a href="{% url 'login' %}" class="link-auth">Login here</a></p>
+            </div>
+        </div>
+        
+        <div class="auth-side">
+            <div class="auth-side-content">
+                <h2>Join Us</h2>
+                <p class="auth-side-text">Experience premium men's fashion with exclusive deals and fast shipping.</p>
+                <div class="auth-features">
+                    <div class="feature">
+                        <span class="feature-icon">🎁</span>
+                        <p>Exclusive Deals</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🛡️</span>
+                        <p>Secure Shopping</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⭐</span>
+                        <p>Rewards Program</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

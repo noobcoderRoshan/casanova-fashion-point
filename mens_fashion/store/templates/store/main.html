@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Casanova Fashion Point</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <script type="text/javascript">
+        var user = '{{request.user}}'
+        function getToken(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getToken('csrftoken');
+    </script>
+</head>
+<body>
+    <!-- Logo Modal -->
+    <div id="logoModal" class="logo-modal">
+      <span class="logo-modal-close">&times;</span>
+      <img class="logo-modal-content" src="{% static 'images/logo.svg' %}" alt="Casanova Logo">
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="{% url 'store' %}" style="display: flex; align-items: center; gap: 8px;">
+        <img id="navbarLogo" src="{% static 'images/logo.svg' %}" alt="Logo" width="30" height="30" style="cursor: pointer;" title="Click to view logo">
+        <span>Casanova Fashion Point</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'store' %}">Store <span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
+        <div class="form-inline my-2 my-lg-0">
+            {% if user.is_authenticated %}
+                <a href="{% url 'orders' %}" class="btn btn-outline-light btn-pill mr-2">My Orders</a>
+                <a href="{% url 'logout' %}" class="btn btn-warning btn-pill mr-2">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-warning btn-pill mr-2">Login</a>
+                <a href="{% url 'signup' %}" class="btn btn-outline-light btn-pill mr-2">Sign Up</a>
+            {% endif %}
+            <a href="{% url 'cart' %}">
+                <img id="cart-icon" src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" width="30">
+            </a>
+            <p id="cart-total">{{order.get_cart_items}}</p>
+        </div>
+      </div>
+    </nav>
+
+      <section class="hero">
+        <div class="container hero-inner">
+          <div class="hero-copy">
+            <span class="hero-pill">New Season 2026</span>
+            <h1>Premium menswear for every moment.</h1>
+            <p>Discover curated essentials, elevated basics, and statement pieces built for comfort and confidence.</p>
+            <div class="hero-actions">
+              <a href="{% url 'store' %}" class="btn btn-primary btn-pill">Shop Collection</a>
+              <a href="{% url 'cart' %}" class="btn btn-outline-light btn-pill">View Cart</a>
+            </div>
+          </div>
+          <div class="hero-card">
+            <h4>Top Picks</h4>
+            <p>Fresh styles added weekly.</p>
+            <div class="hero-stats">
+              <div>
+                <span>120+</span>
+                <small>Products</small>
+              </div>
+              <div>
+                <span>24h</span>
+                <small>Dispatch</small>
+              </div>
+              <div>
+                <span>4.9★</span>
+                <small>Rating</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="container">
+        {% block content %}
+        {% endblock content %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+    <script type="text/javascript">
+      // Logo Modal functionality
+      const logoModal = document.getElementById('logoModal');
+      const navbarLogo = document.getElementById('navbarLogo');
+      const closeBtn = document.querySelector('.logo-modal-close');
+
+      // Open modal when logo is clicked
+      navbarLogo.addEventListener('click', function(e) {
+        e.preventDefault();
+        logoModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      });
+
+      // Close modal when X is clicked
+      closeBtn.addEventListener('click', function() {
+        logoModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      });
+
+      // Close modal when clicking outside the image
+      logoModal.addEventListener('click', function(e) {
+        if (e.target === logoModal) {
+          logoModal.style.display = 'none';
+          document.body.style.overflow = 'auto';
+        }
+      });
+
+      // Close modal on Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && logoModal.style.display === 'flex') {
+          logoModal.style.display = 'none';
+          document.body.style.overflow = 'auto';
+        }
+      });
+    </script>
+</body>
+</html>

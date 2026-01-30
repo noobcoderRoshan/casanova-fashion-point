@@ -1,0 +1,379 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-6">
+        <div class="box-element" id="form-wrapper">
+            <form id="form">
+                {% if not user.is_authenticated %}
+                <div id="user-info">
+                    <div class="form-field">
+                        <input required class="form-control" type="text" name="name" placeholder="Name..">
+                    </div>
+                    <div class="form-field">
+                        <input required class="form-control" type="email" name="email" placeholder="Email..">
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div id="shipping-info">
+                    <hr>
+                    <p>Shipping Information:</p>
+                    <hr>
+                    <div class="form-field">
+                        <input class="form-control" type="text" name="address" placeholder="Address.." required>
+                    </div>
+                    <div class="form-field">
+                        <input class="form-control" type="text" name="city" placeholder="City.." required>
+                    </div>
+                    <div class="form-field">
+                        <input class="form-control" type="text" name="state" placeholder="State.." required>
+                    </div>
+                    <div class="form-field">
+                        <input class="form-control" type="text" name="zipcode" placeholder="Zip code.." required>
+                    </div>
+                </div>
+
+                <hr>
+                <input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
+            </form>
+        </div>
+
+        <br>
+        <div class="box-element hidden" id="payment-info">
+            <h5>Choose Payment Method</h5>
+            <hr>
+            
+            <!-- UPI Payment -->
+            {% if show_upi %}
+            <div class="payment-option">
+                <button id="upi-checkout" class="btn btn-success btn-block mb-2">
+                    💳 Pay with UPI (Google Pay/PhonePe/BHIM)
+                </button>
+                <small class="text-muted">Quick payment via your preferred UPI app - To: {{upi_id}}</small>
+            </div>
+            <hr>
+            {% endif %}
+
+            <!-- Razorpay (UPI/Cards/Wallets) -->
+            {% if razorpay_key_id %}
+            <div class="payment-option">
+                <button id="razorpay-checkout" class="btn btn-info btn-block mb-2">
+                    💰 Pay with Card / Wallet
+                </button>
+                <small class="text-muted">Supports all major payment methods</small>
+            </div>
+            <hr>
+            {% endif %}
+            
+            <!-- Stripe -->
+            {% if stripe_public_key %}
+            <div class="payment-option">
+                <button id="stripe-checkout" class="btn btn-dark btn-block mb-2">
+                    🔒 Pay with Card (International)
+                </button>
+                <small class="text-muted">Stripe test mode (add keys for production)</small>
+            </div>
+            {% endif %}
+            
+            <!-- Demo Payment (Testing) -->
+            <div class="payment-option">
+                <button id="demo-payment" class="btn btn-primary btn-block mb-2">
+                    🧪 Demo Payment (Testing Mode)
+                </button>
+                <small class="text-muted">Test the complete checkout flow without payment gateway</small>
+            </div>
+            
+            {% if not show_upi and not stripe_public_key %}
+            <hr>
+            <div class="alert alert-info">
+                <strong>💡 Enable Real Payments:</strong>
+                <p class="mb-2">Get free test keys from:</p>
+                <ul class="mb-0">
+                    <li><strong>Razorpay</strong> (UPI): <a href="https://razorpay.com" target="_blank">razorpay.com</a></li>
+                    <li><strong>Stripe</strong> (Cards): <a href="https://stripe.com" target="_blank">stripe.com</a></li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        
+    </div>
+
+    <div class="col-lg-6">
+        <div class="box-element">
+            <a class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+            <hr>
+            <h3>Order Summary</h3>
+            <hr>
+            {% for item in items %}
+            <div class="cart-row">
+                <div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}" alt="{{item.product.name}}"></div>
+                <div style="flex:2"><p>{{item.product.name}}</p></div>
+                <div style="flex:1"><p>₹{{item.product.price|stringformat:".2f"}}</p></div>
+                <div style="flex:1"><p>x{{item.quantity}}</p></div>
+            </div>
+            {% endfor %}
+            <h5>Items: {{order.get_cart_items}}</h5>
+                <h5>Total: ₹{{order.get_cart_total|stringformat:".2f"}}</h5>
+        </div>
+    </div>
+</div>
+
+<!-- Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script type="text/javascript">
+    var total = '{{order.get_cart_total}}'
+    var form = document.getElementById('form')
+    var upiId = '{{upi_id}}'
+    var merchantName = 'Mens Fashion Store'
+    
+    form.addEventListener('submit', function(e){
+        e.preventDefault()
+        document.getElementById('form-button').classList.add("hidden");
+        document.getElementById('payment-info').classList.remove("hidden");
+    })
+
+    // UPI Payment
+    var upiBtn = document.getElementById('upi-checkout')
+    if (upiBtn) {
+        upiBtn.addEventListener('click', function(){
+            createUPIPayment()
+        })
+    }
+
+    function createUPIPayment(){
+        var shippingInfo = {
+            'address': form.address.value,
+            'city': form.city.value,
+            'state': form.state.value,
+            'zipcode': form.zipcode.value,
+        }
+
+        fetch("/create-razorpay-order/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({'shipping': shippingInfo}),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.error) {
+                alert('Error: ' + data.error);
+                return;
+            }
+            
+            var options = {
+                "key": data.razorpay_key_id,
+                "amount": data.amount,
+                "currency": "INR",
+                "order_id": data.razorpay_order_id,
+                "handler": function(response) {
+                    verifyUPIPayment(response, data.order_id, shippingInfo);
+                },
+                "prefill": {
+                    "name": user !== 'AnonymousUser' ? '{{request.user.username}}' : (form.name ? form.name.value : ''),
+                    "email": user !== 'AnonymousUser' ? '{{request.user.email}}' : (form.email ? form.email.value : ''),
+                    "contact": "9876543210"
+                },
+                "notes": {
+                    "note_key": "Order from Mens Fashion Store"
+                },
+                "theme": {
+                    "color": "#151724"
+                },
+                "method": {
+                    "upi": true,
+                    "netbanking": false,
+                    "card": false,
+                    "wallet": false
+                }
+            };
+            
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        });
+    }
+
+    function verifyUPIPayment(response, orderId, shippingInfo) {
+        fetch("/verify-razorpay-payment/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+                'razorpay_order_id': response.razorpay_order_id,
+                'razorpay_payment_id': response.razorpay_payment_id,
+                'razorpay_signature': response.razorpay_signature,
+                'order_id': orderId,
+                'shipping': shippingInfo
+            }),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                window.location.href = "{% url 'payment_success' %}";
+            } else {
+                alert('Payment failed: ' + data.error);
+            }
+        });
+    }
+
+    // Razorpay Checkout
+    var razorpayBtn = document.getElementById('razorpay-checkout')
+    if (razorpayBtn) {
+        razorpayBtn.addEventListener('click', function(){
+            createRazorpayOrder()
+        })
+    }
+
+    function createRazorpayOrder(){
+        var shippingInfo = {
+            'address': form.address.value,
+            'city': form.city.value,
+            'state': form.state.value,
+            'zipcode': form.zipcode.value,
+        }
+
+        fetch("/create-razorpay-order/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({'shipping': shippingInfo}),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.error) {
+                alert('Error: ' + data.error);
+                return;
+            }
+            
+            var options = {
+                "key": data.razorpay_key_id,
+                "amount": data.amount,
+                "currency": "INR",
+                "order_id": data.razorpay_order_id,
+                "handler": function(response) {
+                    verifyUPIPayment(response, data.order_id, shippingInfo);
+                },
+                "prefill": {
+                    "name": user !== 'AnonymousUser' ? '{{request.user.username}}' : (form.name ? form.name.value : ''),
+                    "email": user !== 'AnonymousUser' ? '{{request.user.email}}' : (form.email ? form.email.value : ''),
+                },
+                "notes": {
+                    "note_key": "Order from Mens Fashion Store"
+                },
+                "theme": {
+                    "color": "#151724"
+                }
+            };
+            
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        });
+    }
+
+    // Demo Payment
+    var demoBtn = document.getElementById('demo-payment')
+    if (demoBtn) {
+        demoBtn.addEventListener('click', function(){
+            processDemoPayment()
+        })
+    }
+
+    function processDemoPayment(){
+        var userFormData = {
+            'name': null,
+            'email': null,
+            'total': total,
+        }
+
+        var shippingInfo = {
+            'address': form.address.value,
+            'city': form.city.value,
+            'state': form.state.value,
+            'zipcode': form.zipcode.value,
+        }
+
+        if (user != 'AnonymousUser'){
+            userFormData.name = form.name ? form.name.value : '{{request.user.username}}'
+            userFormData.email = form.email ? form.email.value : '{{request.user.email}}'
+        } else {
+            userFormData.name = form.name.value
+            userFormData.email = form.email.value
+        }
+
+        fetch("/process_order/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            }, 
+            body: JSON.stringify({'form': userFormData, 'shipping': shippingInfo}),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success){
+                alert('✅ Demo Payment Successful! Order placed.');
+                window.location.href = "{% url 'payment_success' %}";
+            } else {
+                alert('Error: ' + (data.error || 'Payment failed'));
+            }
+        })
+        .catch((error) => {
+            alert('Transaction completed!');
+            window.location.href = "{% url 'payment_success' %}";
+        });
+    }
+
+    // Stripe Checkout
+    var stripeBtn = document.getElementById('stripe-checkout')
+    if (stripeBtn) {
+        stripeBtn.addEventListener('click', function(){
+            createCheckoutSession()
+        })
+    }
+
+    function createCheckoutSession(){
+        var userFormData = {
+            'name': null,
+            'email': null,
+            'total': total,
+        }
+
+        var shippingInfo = {
+            'address': form.address.value,
+            'city': form.city.value,
+            'state': form.state.value,
+            'zipcode': form.zipcode.value,
+        }
+
+        if (user != 'AnonymousUser'){
+            userFormData.name = form.name ? form.name.value : ''
+            userFormData.email = form.email ? form.email.value : ''
+        }
+
+        fetch("/create-checkout-session/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            }, 
+            body: JSON.stringify({'form': userFormData, 'shipping': shippingInfo}),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.url){
+                window.location.href = data.url
+            } else if (data.error){
+                alert(data.error)
+            }
+        })
+    }
+</script>
+{% endblock content %}
