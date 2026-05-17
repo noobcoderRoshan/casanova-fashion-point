@@ -34,6 +34,18 @@ def store(request):
     return render(request, 'store/store.html', context)
 
 
+def features(request):
+    order, _ = _get_order(request)
+    context = {'order': order}
+    return render(request, 'store/features.html', context)
+
+
+def lanyard(request):
+    order, _ = _get_order(request)
+    context = {'order': order}
+    return render(request, 'store/lanyard.html', context)
+
+
 def cart(request):
     order, _ = _get_order(request)
     items = order.orderitem_set.all()
@@ -120,6 +132,9 @@ def updateItem(request):
         order_item.quantity = (order_item.quantity + 1)
     elif action == 'remove':
         order_item.quantity = (order_item.quantity - 1)
+    elif action == 'delete':
+        order_item.delete()
+        return JsonResponse('Item deleted', safe=False)
 
     order_item.save()
 

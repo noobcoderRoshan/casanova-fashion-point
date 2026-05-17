@@ -1,33 +1,100 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-<div class="section-header">
-    <h2>Featured Products</h2>
+<style>
+  .animated-section {
+    margin: 60px 0;
+    padding: 40px 0;
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+  }
+  
+  .section-header h2 {
+    animation: slideInDown 0.8s ease-out;
+  }
+  
+  @keyframes slideInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<div class="animated-section">
+  <div class="section-header">
+    <h2 class="animated-title">Featured Products</h2>
     <p>Modern fits, tailored comfort, and standout pieces for your wardrobe.</p>
+  </div>
 </div>
 
 <div class="row">
     {% for product in products %}
-    <div class="col-lg-4">
-        <div class="product-card">
-            {% if product.imageURL %}
-                <img class="thumbnail" src="{{product.imageURL}}" alt="{{product.name}}" onerror="this.onerror=null;this.src='{% static 'images/placeholder.svg' %}';">
-            {% else %}
-                <img class="thumbnail" src="{% static 'images/placeholder.svg' %}" alt="{{product.name}}">
-            {% endif %}
+    <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="product-card premium-card">
+            <div class="product-image-wrapper">
+                {% if product.imageURL %}
+                    <img class="thumbnail product-image" src="{{product.imageURL}}" alt="{{product.name}}" onerror="this.onerror=null;this.src='{% static 'images/placeholder.svg' %}';">
+                {% else %}
+                    <img class="thumbnail product-image" src="{% static 'images/placeholder.svg' %}" alt="{{product.name}}">
+                {% endif %}
+                <div class="product-overlay">
+                    <button data-product="{{product.id}}" data-action="add" class="btn btn-primary update-cart">🛒 Quick Add</button>
+                </div>
+                <div class="product-badge">New ✨</div>
+            </div>
             <div class="product-body">
+                <div class="product-category">
+                    <span class="category-tag">{{ product.category.name|default:"Apparel" }}</span>
+                </div>
                 <div class="product-title">
                     <h6>{{product.name}}</h6>
-                    <span class="price">₹{{product.price}}</span>
+                    <span class="price-badge">₹{{product.price}}</span>
                 </div>
                 <p class="product-desc">{{product.description|default:"Premium quality menswear built for everyday confidence."}}</p>
+                <div class="product-rating">
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                    <small>(24)</small>
+                </div>
                 <div class="product-actions">
-                    <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
-                    <a class="btn btn-outline-success" href="#">View</a>
+                    <button data-product="{{product.id}}" data-action="add" class="btn btn-primary btn-sm update-cart">Add to Cart</button>
+                    <a class="btn btn-outline-secondary btn-sm" href="#">View Details</a>
                 </div>
             </div>
         </div>
     </div>
     {% endfor %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="cta-section">
+            <h3>Discover Our Collections</h3>
+            <div class="cta-grid">
+                <div class="cta-card">
+                    <div class="cta-icon">👕</div>
+                    <h4>Casual Wear</h4>
+                    <p>Comfortable and stylish for everyday wear</p>
+                    <a href="#" class="cta-link">Explore →</a>
+                </div>
+                <div class="cta-card">
+                    <div class="cta-icon">💼</div>
+                    <h4>Formal Wear</h4>
+                    <p>Professional and elegant for business</p>
+                    <a href="#" class="cta-link">Explore →</a>
+                </div>
+                <div class="cta-card">
+                    <div class="cta-icon">🏃</div>
+                    <h4>Active Wear</h4>
+                    <p>Performance fabrics for active lifestyle</p>
+                    <a href="#" class="cta-link">Explore →</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock content %}

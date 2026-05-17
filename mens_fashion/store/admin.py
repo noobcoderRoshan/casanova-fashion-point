@@ -82,7 +82,7 @@ class OrderItemInline(admin.TabularInline):
     can_delete = True
     
     def get_item_total(self, obj):
-        return f"₹{obj.get_total}"
+        return f"₹{obj.get_total}" if obj.product else "—"
     get_item_total.short_description = "कुल (Total)"
 
 
@@ -158,15 +158,15 @@ class OrderItemAdmin(admin.ModelAdmin):
     item_id.short_description = "आइटम ID (Item ID)"
     
     def product_name(self, obj):
-        return f"📦 {obj.product.name}"
+        return f"📦 {obj.product.name}" if obj.product else "❌ (Deleted)"
     product_name.short_description = "उत्पाद (Product)"
     
     def unit_price(self, obj):
-        return f"₹{obj.product.price}"
+        return f"₹{obj.product.price}" if obj.product else "—"
     unit_price.short_description = "प्रति यूनिट (Unit Price)"
     
     def total_price(self, obj):
-        return f"₹{obj.get_total:.2f}"
+        return f"₹{obj.get_total:.2f}" if obj.product else "—"
     total_price.short_description = "कुल (Total)"
     
     def date_added(self, obj):
@@ -177,7 +177,7 @@ class ShippingAddressAdmin(admin.ModelAdmin):
     list_display = ['full_address', 'customer', 'city', 'state', 'order_ref']
     list_filter = ['state', 'city']
     search_fields = ['user__username', 'address', 'city', 'state']
-    ordering = ['-order__date_ordered']
+    ordering = ['-date_added']
     readonly_fields = ['user', 'order']
     
     fieldsets = (
@@ -199,7 +199,9 @@ class ShippingAddressAdmin(admin.ModelAdmin):
     customer.short_description = "ग्राहक (Customer)"
     
     def order_ref(self, obj):
-        return f"#Order-{obj.order.id}"
+        if obj.order:
+            return f"#Order-{obj.order.id}"
+        return "Not Assigned"
     order_ref.short_description = "आदेश नंबर (Order #)"
 
 

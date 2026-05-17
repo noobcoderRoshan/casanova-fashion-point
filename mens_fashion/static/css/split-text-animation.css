@@ -1,0 +1,47 @@
+/**
+ * SplitText Animation CSS
+ * Styles for text animation effects
+ */
+
+/* Split character base styling */
+.split-char,
+.split-word {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.split-char {
+  margin: 0 -0.02em;
+}
+
+.split-word {
+  margin-right: 0.25em;
+}
+
+/* Navbar brand animation styling */
+.navbar-brand span.split-parent {
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.navbar-brand span.split-parent .split-char {
+  color: #fff;
+  transition: color 0.3s ease;
+}
+
+/* Hover effect for navbar brand */
+.navbar-brand:hover span.split-parent .split-char {
+  color: #ffc107;
+}
+
+/* Line split styling */
+.split-line {
+  display: block;
+  overflow: hidden;
+}
+
+/* Animation completion state */
+.split-parent.animated {
+  opacity: 1;
+}

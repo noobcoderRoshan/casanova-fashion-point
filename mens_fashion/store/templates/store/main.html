@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/split-text-animation.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/magnet-lines.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/cubes.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/magic-bento.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/lanyard-card.css' %}">>>
     <script type="text/javascript">
         var user = '{{request.user}}'
         function getToken(name) {
@@ -44,8 +49,14 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="{% url 'store' %}">Store <span class="sr-only">(current)</span></a>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'store' %}">Store</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'features' %}">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'lanyard' %}">3D Card</a>
           </li>
         </ul>
         <div class="form-inline my-2 my-lg-0">
@@ -65,31 +76,34 @@
     </nav>
 
       <section class="hero">
-        <div class="container hero-inner">
-          <div class="hero-copy">
-            <span class="hero-pill">New Season 2026</span>
-            <h1>Premium menswear for every moment.</h1>
-            <p>Discover curated essentials, elevated basics, and statement pieces built for comfort and confidence.</p>
-            <div class="hero-actions">
-              <a href="{% url 'store' %}" class="btn btn-primary btn-pill">Shop Collection</a>
-              <a href="{% url 'cart' %}" class="btn btn-outline-light btn-pill">View Cart</a>
+        <div class="hero-inner-wrapper">
+          <div id="cubes-container" class="hero-cubes"></div>
+          <div class="container hero-inner">
+            <div class="hero-copy">
+              <span class="hero-pill">New Season 2026</span>
+              <h1>Premium menswear for every moment.</h1>
+              <p>Discover curated essentials, elevated basics, and statement pieces built for comfort and confidence.</p>
+              <div class="hero-actions">
+                <a href="{% url 'store' %}" class="btn btn-primary btn-pill">Shop Collection</a>
+                <a href="{% url 'cart' %}" class="btn btn-outline-light btn-pill">View Cart</a>
+              </div>
             </div>
-          </div>
-          <div class="hero-card">
-            <h4>Top Picks</h4>
-            <p>Fresh styles added weekly.</p>
-            <div class="hero-stats">
-              <div>
-                <span>120+</span>
-                <small>Products</small>
-              </div>
-              <div>
-                <span>24h</span>
-                <small>Dispatch</small>
-              </div>
-              <div>
-                <span>4.9★</span>
-                <small>Rating</small>
+            <div class="hero-card">
+              <h4>Top Picks</h4>
+              <p>Fresh styles added weekly.</p>
+              <div class="hero-stats">
+                <div>
+                  <span>120+</span>
+                  <small>Products</small>
+                </div>
+                <div>
+                  <span>24h</span>
+                  <small>Dispatch</small>
+                </div>
+                <div>
+                  <span>4.9★</span>
+                  <small>Rating</small>
+                </div>
               </div>
             </div>
           </div>
@@ -104,8 +118,72 @@
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <!-- GSAP Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Custom Animation Scripts -->
+    <script type="text/javascript" src="{% static 'js/split-text-animation.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/magnet-lines.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/cubes.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/magic-bento.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/lanyard-card.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/lanyard-advanced.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
     <script type="text/javascript">
+      // Initialize Cubes in hero section
+      document.addEventListener('DOMContentLoaded', function() {
+        const cubes = new Cubes({
+          gridSize: 8,
+          maxAngle: 60,
+          radius: 4,
+          borderStyle: '2px solid #ffffff',
+          faceColor: '#1a1a1a',
+          rippleColor: '#ffffff',
+          rippleSpeed: 1.5,
+          autoAnimate: true,
+          rippleOnClick: true,
+          containerId: 'cubes-container'
+        });
+        cubes.init();
+      });
+
+      // Initialize MagnetLines background
+      document.addEventListener('DOMContentLoaded', function() {
+        const magnetLines = new MagnetLines({
+          rows: 30,
+          columns: 30,
+          containerSize: '100vw',
+          lineColor: '#4a4a4a',
+          lineWidth: '0.8vmin',
+          lineHeight: '4vmin',
+          baseAngle: -15,
+          opacity: 0.6
+        });
+        magnetLines.init();
+      });
+
+      // Initialize text animation for navbar brand
+      document.addEventListener('DOMContentLoaded', function() {
+        const navbarBrand = document.querySelector('.navbar-brand span');
+        if (navbarBrand) {
+          const textAnimation = new SplitTextAnimation({
+            delay: 40,
+            duration: 1.2,
+            ease: 'power3.out',
+            splitType: 'chars',
+            from: { opacity: 0, y: 20 },
+            to: { opacity: 1, y: 0 },
+            triggerOnScroll: false, // Play immediately
+            onComplete: (el) => {
+              console.log('✨ Text animation complete!');
+            }
+          });
+          textAnimation.init(navbarBrand);
+        }
+      });
+
       // Logo Modal functionality
       const logoModal = document.getElementById('logoModal');
       const navbarLogo = document.getElementById('navbarLogo');

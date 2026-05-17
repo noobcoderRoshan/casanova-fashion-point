@@ -1,0 +1,42 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="lanyard-wrapper">
+  <!-- Strap and hook visual -->
+  <div class="lanyard-strap-visual" aria-hidden="true">
+    <div class="strap-line"></div>
+    <div class="strap-icons"></div>
+    <div class="strap-hook"></div>
+  </div>
+
+  <div id="lanyard-container">
+    <p style="color: #999; text-align: center; padding: 20px;">Loading 3D card...</p>
+  </div>
+
+  <div class="lanyard-info">
+    <p><strong>Drag the card</strong> to interact • <strong>Move mouse</strong> to rotate</p>
+    <p style="margin-top: 10px; color: #999; font-size: 12px;">Follow @Casanova_guy_since2004 on Instagram</p>
+  </div>
+</div>
+
+<script>
+  console.log('Lanyard template loaded');
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded fired');
+    if (typeof LanyardAdvanced === 'undefined') {
+      console.error('LanyardAdvanced class not found!');
+      document.getElementById('lanyard-container').innerHTML = '<p style="color: red;">Error: LanyardAdvanced not loaded</p>';
+      return;
+    }
+    console.log('LanyardAdvanced found, initializing...');
+    const lanyard = new LanyardAdvanced('lanyard-container', {
+      position: [0, 0, 25],
+      gravity: [0, -40, 0],
+      fov: 20,
+      transparent: false
+    });
+    lanyard.init();
+  });
+</script>
+{% endblock %}

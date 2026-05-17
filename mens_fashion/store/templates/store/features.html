@@ -1,0 +1,79 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+<section class="bento-section">
+  <div class="container">
+    <div style="text-align: center; margin-top: 60px; margin-bottom: 40px;">
+      <h1 style="font-size: 2.5rem; font-weight: 700; color: #000000; margin-bottom: 10px;">
+        Premium Features
+      </h1>
+      <p style="font-size: 1.1rem; color: #666; max-width: 500px; margin: 0 auto;">
+        Experience cutting-edge features designed for style and performance
+      </p>
+    </div>
+  </div>
+
+  <div class="card-grid" id="magic-bento-grid"></div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const cardData = [
+      {
+        color: '#1a1a1a',
+        title: 'Premium Collection',
+        description: 'Handpicked menswear for every occasion',
+        label: 'Curated'
+      },
+      {
+        color: '#1a1a1a',
+        title: 'Fast Dispatch',
+        description: '24-hour order processing guaranteed',
+        label: 'Quick'
+      },
+      {
+        color: '#1a1a1a',
+        title: 'Expert Styling',
+        description: 'Professional style guidance included',
+        label: 'Support'
+      },
+      {
+        color: '#1a1a1a',
+        title: 'Quality Assured',
+        description: 'Premium fabrics and craftsmanship',
+        label: 'Premium'
+      },
+      {
+        color: '#1a1a1a',
+        title: 'Secure Checkout',
+        description: 'Enterprise-grade payment protection',
+        label: 'Safe'
+      },
+      {
+        color: '#1a1a1a',
+        title: 'Easy Returns',
+        description: '30-day hassle-free return policy',
+        label: 'Guarantee'
+      }
+    ];
+
+    const magicBento = new MagicBento({
+      textAutoHide: true,
+      enableStars: true,
+      enableSpotlight: true,
+      enableBorderGlow: true,
+      enableTilt: false,
+      enableMagnetism: true,
+      clickEffect: true,
+      spotlightRadius: 300,
+      particleCount: 12,
+      glowColor: '255, 255, 255',
+      containerId: 'magic-bento-grid',
+      cardData: cardData
+    });
+
+    magicBento.init();
+  });
+</script>
+{% endblock %}
