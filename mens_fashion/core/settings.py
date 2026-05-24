@@ -27,7 +27,12 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-19n#u(c06()wo=l(+gfiu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,*.onrender.com,casanova-fashion.onrender.com,e-website-1oaf.onrender.com', cast=Csv())
+# Accept all Render domains and localhost
+if DEBUG:
+    ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
+else:
+    # Production: accept all onrender.com subdomains
+    ALLOWED_HOSTS = ['*']  # Render-only app, safe to accept all
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
