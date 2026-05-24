@@ -34,6 +34,17 @@ def store(request):
     return render(request, 'store/store.html', context)
 
 
+def product_detail(request, product_id):
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return redirect('store')
+    
+    order, _ = _get_order(request)
+    context = {'product': product, 'order': order}
+    return render(request, 'store/product_detail.html', context)
+
+
 def features(request):
     order, _ = _get_order(request)
     context = {'order': order}

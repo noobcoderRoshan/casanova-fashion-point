@@ -62,7 +62,7 @@
                 </div>
                 <div class="product-actions">
                     <button data-product="{{product.id}}" data-action="add" class="btn btn-primary btn-sm update-cart">Add to Cart</button>
-                    <a class="btn btn-outline-secondary btn-sm" href="#">View Details</a>
+                    <a class="btn btn-outline-secondary btn-sm" href="{% url 'product_detail' product.id %}">View Details</a>
                 </div>
             </div>
         </div>
@@ -79,19 +79,19 @@
                     <div class="cta-icon">👕</div>
                     <h4>Casual Wear</h4>
                     <p>Comfortable and stylish for everyday wear</p>
-                    <a href="#" class="cta-link">Explore →</a>
+                    <a href="{% url 'store' %}" class="cta-link">Explore →</a>
                 </div>
                 <div class="cta-card">
                     <div class="cta-icon">💼</div>
                     <h4>Formal Wear</h4>
                     <p>Professional and elegant for business</p>
-                    <a href="#" class="cta-link">Explore →</a>
+                    <a href="{% url 'store' %}" class="cta-link">Explore →</a>
                 </div>
                 <div class="cta-card">
                     <div class="cta-icon">🏃</div>
                     <h4>Active Wear</h4>
                     <p>Performance fabrics for active lifestyle</p>
-                    <a href="#" class="cta-link">Explore →</a>
+                    <a href="{% url 'store' %}" class="cta-link">Explore →</a>
                 </div>
             </div>
         </div>

@@ -1,0 +1,225 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<style>
+  .product-detail-container {
+    margin: 40px 0;
+  }
+  
+  .product-detail-header {
+    margin-bottom: 30px;
+  }
+  
+  .product-image-detail {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-info {
+    padding: 20px 0;
+  }
+  
+  .product-price {
+    font-size: 32px;
+    font-weight: bold;
+    color: #d4a574;
+    margin: 20px 0;
+  }
+  
+  .product-rating-detail {
+    margin: 15px 0;
+  }
+  
+  .quantity-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  
+  .quantity-btn {
+    border: 1px solid #ddd;
+    width: 40px;
+    height: 40px;
+    background: white;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .quantity-input {
+    width: 60px;
+    text-align: center;
+    border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  
+  .product-actions-detail {
+    display: flex;
+    gap: 15px;
+    margin: 30px 0;
+  }
+  
+  .back-link {
+    margin-bottom: 20px;
+  }
+  
+  .back-link a {
+    color: #666;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .back-link a:hover {
+    color: #d4a574;
+  }
+  
+  .product-description-detail {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+    line-height: 1.8;
+  }
+</style>
+
+<div class="product-detail-container">
+  <div class="back-link">
+    <a href="{% url 'store' %}">← Back to Store</a>
+  </div>
+  
+  <div class="product-detail-header">
+    <div class="row">
+      <div class="col-md-6">
+        {% if product.imageURL %}
+          <img class="product-image-detail" src="{{product.imageURL}}" alt="{{product.name}}" onerror="this.onerror=null;this.src='{% static 'images/placeholder.svg' %}';">
+        {% else %}
+          <img class="product-image-detail" src="{% static 'images/placeholder.svg' %}" alt="{{product.name}}">
+        {% endif %}
+      </div>
+      
+      <div class="col-md-6">
+        <div class="product-info">
+          <span class="badge badge-info">{{ product.category.name|default:"Apparel" }}</span>
+          <h2 class="mt-3">{{product.name}}</h2>
+          
+          <div class="product-rating-detail">
+            <span class="stars">⭐⭐⭐⭐⭐</span>
+            <small class="text-muted">(124 reviews)</small>
+          </div>
+          
+          <div class="product-price">₹{{product.price}}</div>
+          
+          <p class="text-muted">Stock: <strong>{% if product.stock > 0 %}In Stock{% else %}Out of Stock{% endif %}</strong></p>
+          
+          <div class="quantity-selector">
+            <button class="quantity-btn" onclick="decrementQuantity()">−</button>
+            <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="{% if product.stock %}{{product.stock}}{% else %}100{% endif %}">
+            <button class="quantity-btn" onclick="incrementQuantity()">+</button>
+          </div>
+          
+          <div class="product-actions-detail">
+            <button data-product="{{product.id}}" data-action="add" class="btn btn-primary btn-lg update-cart-detail">🛒 Add to Cart</button>
+            <button class="btn btn-outline-secondary btn-lg">💙 Save for Later</button>
+          </div>
+          
+          <div class="product-description-detail">
+            <h5>Product Description</h5>
+            <p>{{product.description|default:"Premium quality menswear built for everyday confidence. This piece combines style, comfort, and durability, making it a versatile addition to any wardrobe."}}</p>
+            
+            <h5 class="mt-4">Features</h5>
+            <ul>
+              <li>Premium quality fabric</li>
+              <li>Comfortable fit</li>
+              <li>Durable construction</li>
+              <li>Easy to care for</li>
+              <li>Perfect for any occasion</li>
+            </ul>
+            
+            <h5 class="mt-4">Shipping & Returns</h5>
+            <p>Free shipping on orders over ₹1000. Easy returns within 30 days.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row mt-5 mb-5">
+    <div class="col-12">
+      <h4>You Might Also Like</h4>
+      <div class="row mt-4">
+        <!-- Similar products can be shown here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function incrementQuantity() {
+    const input = document.getElementById('quantity');
+    input.value = parseInt(input.value) + 1;
+  }
+  
+  function decrementQuantity() {
+    const input = document.getElementById('quantity');
+    if (parseInt(input.value) > 1) {
+      input.value = parseInt(input.value) - 1;
+    }
+  }
+  
+  // Handle Add to Cart with quantity
+  document.querySelector('.update-cart-detail').addEventListener('click', function() {
+    const quantity = document.getElementById('quantity').value;
+    const productId = this.getAttribute('data-product');
+    
+    addToCartWithQuantity(productId, quantity);
+  });
+  
+  function addToCartWithQuantity(productId, quantity) {
+    addItem(productId, 'add', quantity);
+  }
+  
+  function addItem(productId, action, quantity = 1) {
+    const url = '/update_item/';
+    const data = {
+      productId: productId,
+      action: action,
+      quantity: quantity
+    };
+    
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Item added to cart:', data);
+      location.reload();
+    })
+    .catch(error => console.log('Error:', error));
+  }
+  
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
+{% endblock content %}
