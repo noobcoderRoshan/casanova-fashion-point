@@ -27,12 +27,8 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-19n#u(c06()wo=l(+gfiu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-# Accept all Render domains and localhost
-if DEBUG:
-    ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
-else:
-    # Production: accept all onrender.com subdomains
-    ALLOWED_HOSTS = ['*']  # Render-only app, safe to accept all
+# Accept all hosts for Render
+ALLOWED_HOSTS = ['*']
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
