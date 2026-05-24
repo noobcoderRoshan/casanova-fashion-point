@@ -2,22 +2,14 @@ services:
   - type: web
     name: casanova-fashion
     runtime: python
-    buildCommand: pip install -r requirements.txt && python mens_fashion/manage.py collectstatic --noinput
+    buildCommand: pip install -r requirements.txt && python mens_fashion/manage.py collectstatic --noinput && python mens_fashion/manage.py migrate --noinput
     startCommand: gunicorn core.wsgi --chdir=mens_fashion
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.0
       - key: DEBUG
-        value: false
+        value: true
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
-        value: "*.onrender.com,127.0.0.1"
-      - key: STRIPE_PUBLIC_KEY
-        sync: false
-      - key: STRIPE_SECRET_KEY
-        sync: false
-      - key: RAZORPAY_KEY_ID
-        sync: false
-      - key: RAZORPAY_KEY_SECRET
-        sync: false
+        value: "*"
