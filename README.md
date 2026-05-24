@@ -166,7 +166,7 @@ This project is open source and available under the MIT License.
 
 ## 👨‍💻 Developer
 
-Created by RK905
+Created by Roshan kumar (backend & Rest API ) & piyush chowdhury (frontend testing) 
 
 ## 📞 Support
 
