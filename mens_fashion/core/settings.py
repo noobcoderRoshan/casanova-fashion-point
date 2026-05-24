@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-19n#u(c06()wo=l(+gfiu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,*.onrender.com,casanova-fashion.onrender.com', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,*.onrender.com,casanova-fashion.onrender.com,e-website-1oaf.onrender.com', cast=Csv())
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
