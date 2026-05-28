@@ -102,9 +102,6 @@ Access the beautiful custom admin panel at `/admin/`
 - 🎨 Saffron/Gold color scheme
 - ✅ Visual indicators for stock levels
 
-**Default Admin Credentials:**
-- Username: `admin`
-- Password: `admin123`
 
 ## 💳 Payment Options
 
